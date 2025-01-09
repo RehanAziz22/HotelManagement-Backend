@@ -16,9 +16,11 @@ app.use(cors());
 const userRouter = require("./Routes/userRoutes");
 const roomRouter = require("./Routes/roomRoutes");
 const taskRouter = require("./Routes/taskRoutes");
+const invoiceRouter = require("./Routes/invoiceRoutes");
 app.use("/api/user", userRouter);
 app.use("/api/room", roomRouter);
 app.use("/api/task", taskRouter);
+app.use("/api/invoice", invoiceRouter);
 
 // Testing endpoint
 app.get("/", (req, res) => {

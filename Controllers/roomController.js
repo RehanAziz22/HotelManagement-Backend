@@ -65,6 +65,49 @@ const roomController = {
         }
        
     },
+    updateRoom: async (req, res) => {
+        const { roomNumber, imageUrl, roomType, availability, pricePerNight, status } = req.body;
+    
+        if (!roomNumber) {
+            return res.json({
+                message: "Room number is required for updating details",
+                status: false
+            });
+        }
+    
+        try {
+            const room = await RoomModel.findOne({ roomNumber });
+    
+            if (!room) {
+                return res.json({
+                    message: "Room not found",
+                    status: false
+                });
+            }
+    
+            // Update room details
+            room.imageUrl = imageUrl || room.imageUrl;
+            room.roomType = roomType || room.roomType;
+            room.availability = availability !== undefined ? availability : room.availability;
+            room.pricePerNight = pricePerNight || room.pricePerNight;
+            room.status = status || room.status;
+    
+            await room.save();
+    
+            res.json({
+                message: "Room updated successfully",
+                data: room,
+                status: true
+            });
+    
+        } catch (error) {
+            res.status(500).json({
+                message: "Error updating room details",
+                error: error.message,
+                status: false
+            });
+        }
+    },    
     updateRoomStatus:async (req, res) => {
         const { status } = req.body;
     
@@ -126,6 +169,72 @@ const roomController = {
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Server error' });
+        }
+    },
+    updateCheckInStatus:async (req, res) => {
+        const { roomNumber } = req.params;
+        const { checkInStatus, guestId, name, contact, checkInDate, checkOutDate,totalBill } = req.body;
+    
+        try {
+            const room = await RoomModel.findOne({ roomNumber });
+    
+            if (!room) {
+                return res.status(404).json({ message: "Room not found" });
+            }
+    
+            // if (room.status !== "available") {
+            //     return res.status(400).json({ message: "Room is not available for check-in" });
+            // }
+    
+            // Update guest and check-in details
+            room.guest = {
+                guestId,
+                name,
+                contact,
+                checkInDate,
+                checkOutDate,
+                checkInStatus,
+                totalBill
+                        };
+    
+            room.status = "occupied"; // Mark room as occupied
+            room.availability = false;
+    
+            await room.save();
+            res.status(200).json({ message: "Check-in status updated successfully", room });
+        } catch (error) {
+            res.status(500).json({ message: "Error updating check-in status", error });
+        }
+    },
+    updateCheckOutStatus:async (req, res) => {
+        const { roomNumber } = req.params;
+        const { checkOutStatus, guestId, name, contact, checkInDate, checkOutDate,totalBill } = req.body;
+    
+        try {
+            const room = await RoomModel.findOne({ roomNumber });
+    
+            if (!room) {
+                return res.status(404).json({ message: "Room not found" });
+            }
+    
+            room.guest = {
+                guestId,
+                name,
+                contact,
+                checkInDate,
+                checkOutDate,
+                checkOutStatus,
+                checkInStatus: true,
+                totalBill
+                        };
+    
+            room.status = "available"; // Mark room as occupied
+            room.availability = true;
+    
+            await room.save();
+            res.status(200).json({ message: "Check-out status updated successfully", room });
+        } catch (error) {
+            res.status(500).json({ message: "Error updating check-out status", error });
         }
     }
 }

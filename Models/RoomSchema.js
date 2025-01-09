@@ -55,6 +55,14 @@ const roomSchema = new Schema({
             type: Date,  // Date when the guest checks out
             required: false
         },
+        checkInStatus:{
+            type:Boolean,
+            default:false
+        },
+        checkOutStatus:{
+            type:Boolean,
+            default:false
+        },
         totalBill:{
             type: Number,
             default: 0

@@ -17,10 +17,12 @@ const userRouter = require("./Routes/userRoutes");
 const roomRouter = require("./Routes/roomRoutes");
 const taskRouter = require("./Routes/taskRoutes");
 const invoiceRouter = require("./Routes/invoiceRoutes");
+const feedbackRouter = require("./Routes/feedbackRoutes");
 app.use("/api/user", userRouter);
 app.use("/api/room", roomRouter);
 app.use("/api/task", taskRouter);
 app.use("/api/invoice", invoiceRouter);
+app.use('/api/feedback',feedbackRouter)
 
 // Testing endpoint
 app.get("/", (req, res) => {
